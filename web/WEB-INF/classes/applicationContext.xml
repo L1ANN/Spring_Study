@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--IOC容器的配置：要创建的所有的对象都配置在这里-->
+    <!--
+       id:唯一标识一个bean标签
+       class：我们要交给IOC管理的POJO对象
+       scope:创建对象的模式，singleton单例模式（只创建一个对象供外界使用）
+                           prtotype正常模式（每次调用创建一个对象）
+    -->
+
+    <!--默认调用无参数构造器-->
+    <bean id="user" class="domain.User" scope="prototype"></bean>
+
+    <!--调用有参构造器-->
+    <!--
+       value:代表给User的属性赋值
+       index:给构造器中哪一个属性赋值
+       type:赋值的属性类型，若为基本类型直接写，若为引用类型则写全它的名字
+    -->
+    <bean id="user2" class="domain.User">
+        <constructor-arg value="100" index="0" type="int"/>
+        <constructor-arg value="jack" index="1" type="java.lang.String"/>
+    </bean>
+    <!--调用有参构造器-->
+    <!--
+       ref:调用IOC容器中的bean对象
+    -->
+    <bean id="str" class="java.lang.String">
+        <constructor-arg value="jack"/>
+    </bean>
+    <bean id="user3" class="domain.User">
+        <constructor-arg value="100" index="0" type="int"/>
+        <constructor-arg ref="str" index="1" type="java.lang.String"/>
+    </bean>
+
+    <!--工厂创建方法：-->
+
+    <!--工厂类的实例方法：必须先创建工厂-->
+    <bean id="factory" class="test.ObjectFactory"></bean>
+    <!--在创建user对象，用factory实例方法的返回值-->
+    <bean id="user4" factory-bean="factory" factory-method="getInstance"/>
+
+    <!--
+        工厂类的静态方法
+        不用创建工厂对象，直接用工厂类型就行
+        class:指定的是工厂类型
+        factory-method：只能选择静态方法
+    -->
+    <bean id="user5" class="test.ObjectFactory" factory-method="getStaticInstance"/>
+
+    <!--1.通过构造函数给属性赋值-->
+    <bean id="user6" class="domain.User">
+        <constructor-arg value="100"></constructor-arg>
+        <constructor-arg value="jack"></constructor-arg>
+    </bean>
+
+    <!--2.通过set给属性赋值，需要再User对象中对属性添加set方法-->
+    <bean id="user7" class="domain.User">
+        <property name="id" value="1000"></property>
+        <property name="name" value="rose"></property>
+    </bean>
+
+    <!--dao对象的创建-->
+    <!--<bean id="userDAO" class="pojo.UserDAO"></bean>-->
+    <!--service对象的创建-->
+    <!--<bean id="userService" class="pojo.UserService" autowire="byName"></bean>-->
+    <!--servlet对象的创建-->
+    <!--<bean id="userServlet" class="pojo.UserServlet" autowire="byName"></bean>-->
+
+    <!--使用内部bean实现dao，service，servlet三个对象的创建以及它们的依赖关系-->
+    <!--<bean id="userServlet1" class="pojo.UserServlet">-->
+        <!--<property name="userService">-->
+            <!--<bean class="pojo.UserService">-->
+                <!--<property name="userDAO">-->
+                    <!--<bean class="pojo.UserDAO"></bean>-->
+                <!--</property>-->
+            <!--</bean>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--base-package:表示此包下所有类或此包下所有包的声明,表示该扫描器只扫描此包下所有类-->
+    <context:component-scan base-package="pojo"/>
+
+
+</beans>
